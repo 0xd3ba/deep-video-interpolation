@@ -15,7 +15,7 @@ def build_chkpt_dict(model, epoch, optimizer, loss):
 
     return {
         'epoch': epoch,
-        'model_state_dict': model.cpu().state_dict(),
+        'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': loss
     }
@@ -51,7 +51,7 @@ def train(model, data_loader, n_epochs, chkpt_epochs, chkpt_dir, device):
             epoch_loss += loss.cpu().item()
 
         # TODO: Save the model
-        if e % chkpt_epochs == 0:
+        if (e+1) % chkpt_epochs == 0:
             chkpt_path = str(chkpt_dir / f'{MODEL_CHKPT_PREFIX}_{e}.pt')
             chkpt_dict = build_chkpt_dict(model, e, optimizer, epoch_loss)
             torch.save(chkpt_dict, chkpt_path)

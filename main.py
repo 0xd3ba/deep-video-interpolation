@@ -22,7 +22,7 @@ TRAIN_DIR = 'train'               # Training set directory name
 TEST_DIR = 'test'                 # Testing set directory name
 
 BATCH_SIZE = 16                   # No. of samples per batch
-N_EPOCHS = 10                     # No. of epochs to train
+N_EPOCHS = 20                     # No. of epochs to train
 CHKPT_EPOCHS = 2                  # Epochs after which model will be saved
 # -----------------------------------------------------------------------------
 
