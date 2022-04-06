@@ -1,8 +1,24 @@
 # start.py -- Module containing the code for training/testing
 
+import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
+# -------------------------- CONSTANTS --------------------------
+MODEL_CHKPT_PREFIX = 'model'    # Prefix for model checkpoint
+# ---------------------------------------------------------------
+
+
+def build_chkpt_dict(model, epoch, optimizer, loss):
+    """ Builds the dictionary for saving the model """
+
+    return {
+        'epoch': epoch,
+        'model_state_dict': model.cpu().state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss
+    }
 
 
 def train(model, data_loader, n_epochs, chkpt_epochs, chkpt_dir, device):
@@ -15,7 +31,7 @@ def train(model, data_loader, n_epochs, chkpt_epochs, chkpt_dir, device):
     for e in range(n_epochs):
         epoch_loss = 0
 
-        for prev_frame, next_frame, target_frame in data_loader:
+        for prev_frame, next_frame, target_frame in tqdm.tqdm(data_loader):
             prev_frame = prev_frame.to(device)
             next_frame = next_frame.to(device)
             target_frame = target_frame.to(device)
@@ -36,9 +52,11 @@ def train(model, data_loader, n_epochs, chkpt_epochs, chkpt_dir, device):
 
         # TODO: Save the model
         if e % chkpt_epochs == 0:
-            pass
+            chkpt_path = str(chkpt_dir / f'{MODEL_CHKPT_PREFIX}_{e}.pt')
+            chkpt_dict = build_chkpt_dict(model, e, optimizer, epoch_loss)
+            torch.save(chkpt_dict, chkpt_path)
 
-        print(f'Epoch[{e}]: {epoch_loss}')
+        print(f'Epoch[{e}] loss: {epoch_loss}\n')
 
 
 def test(model, data_loader, output_dir, gpu_available):

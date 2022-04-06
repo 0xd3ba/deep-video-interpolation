@@ -15,15 +15,15 @@ import start
 
 
 # --------------------------------- CONSTANTS ---------------------------------
-CHKPT_DIR_PATH = './chkpt_dir'  # The directory for storing model checkpoints
-OUTPUT_DIR_PATH = './output'    # The directory for storing output
-DATA_DIR_PATH = './dataset'     # Root directory of the dataset
-TRAIN_DIR = 'train'             # Training set directory name
-TEST_DIR = 'test'               # Testing set directory name
+CHKPT_DIR_PATH = './checkpoints'  # The directory for storing model checkpoints
+OUTPUT_DIR_PATH = './output'      # The directory for storing output
+DATA_DIR_PATH = './dataset'       # Root directory of the dataset
+TRAIN_DIR = 'train'               # Training set directory name
+TEST_DIR = 'test'                 # Testing set directory name
 
-BATCH_SIZE = 32                 # No. of samples per batch
-N_EPOCHS = 1000                 # No. of epochs to train
-CHKPT_EPOCHS = 50               # Epochs after which model will be saved
+BATCH_SIZE = 16                   # No. of samples per batch
+N_EPOCHS = 10                     # No. of epochs to train
+CHKPT_EPOCHS = 2                  # Epochs after which model will be saved
 # -----------------------------------------------------------------------------
 
 
