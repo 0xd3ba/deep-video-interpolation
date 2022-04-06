@@ -4,11 +4,27 @@
 #   python3 main.py --realTime {0 | 1} --train {0 | 1}
 
 import argparse
+import pathlib
 import sys
+import torch.utils.data
 
 # Custom module imports
-# TODO: Import data-loader
+import dataset.x4k as dataset
 import net.net as net
+import start
+
+
+# --------------------------------- CONSTANTS ---------------------------------
+CHKPT_DIR_PATH = './chkpt_dir'  # The directory for storing model checkpoints
+OUTPUT_DIR_PATH = './output'    # The directory for storing output
+DATA_DIR_PATH = './dataset'     # Root directory of the dataset
+TRAIN_DIR = 'train'             # Training set directory name
+TEST_DIR = 'test'               # Testing set directory name
+
+BATCH_SIZE = 32                 # No. of samples per batch
+N_EPOCHS = 1000                 # No. of epochs to train
+CHKPT_EPOCHS = 50               # Epochs after which model will be saved
+# -----------------------------------------------------------------------------
 
 
 def parse_args(args):
@@ -30,10 +46,34 @@ def parse_args(args):
 
 if __name__ == '__main__':
     real_time_mode, train_mode = parse_args(sys.argv[1:])
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # TODO: Prepare the data-loader object
+    assert torch.cuda.is_available(), "[ERROR]: Need CUDA supported GPU or else it will not work :("
 
-    # Backbone network for extracting the features
-    # NOTE: The output number of channels from the backbone network must be 64
-    # TODO: Add the real-time feature extractor network here
+    # Set the dataset path accordingly
+    chkpt_dir_path = pathlib.Path(CHKPT_DIR_PATH)
+    output_dir_path = pathlib.Path(OUTPUT_DIR_PATH)
+    data_dir_path = pathlib.Path(DATA_DIR_PATH)
+    dataset_dir = TRAIN_DIR if train_mode else TEST_DIR
+    dataset_path = data_dir_path / dataset_dir
+
+    # Prepare the torch dataset object, and then the loader class
+    dataset_obj = dataset.X4K1000FPS(dataset_path)
+    data_loader = torch.utils.data.DataLoader(
+        dataset_obj,
+        batch_size=BATCH_SIZE,
+        shuffle=True,
+        num_workers=2,
+        pin_memory=True if torch.cuda.is_available() else False
+    )
+
+    # Build the network
     network = net.InterpolationNet(real_time_mode)
+
+    # Finally start the training/testing
+    if train_mode:
+        start.train(network, data_loader, N_EPOCHS, CHKPT_EPOCHS, chkpt_dir_path, device)
+    else:
+        # Testing mode. TODO: Yet to implement it
+        start.test(network, data_loader, output_dir_path, device)
+

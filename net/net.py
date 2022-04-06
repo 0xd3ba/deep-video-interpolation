@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # Custom module imports
-# import net.sepconv
+import net.sepconv as sepconv
 import net.backbone.fe as fe
 import net.backbone.rt_fe as rt_fe
 import net.subnet.subnet as subnet
@@ -24,6 +24,10 @@ class InterpolationNet(nn.Module):
 
     def __init__(self, real_time, in_channels=64, out_channels=51):
         super().__init__()
+
+        self.sep_conv_net = sepconv.FunctionSepconv()
+        self.input_pad_pixels = out_channels // 2
+        self.input_pad = nn.ReplicationPad2d([self.input_pad_pixels]*4)
 
         # Set the appropriate class references
         # TODO: Write the appropriate references for real-time variant
@@ -74,10 +78,21 @@ class InterpolationNet(nn.Module):
         k2_v = self.vnet_2(output_features)
         k2_h = self.hnet_2(output_features)
 
-        # TODO: Pass the branched result to separable-convolution layer
-        # TODO: Add the result to get the final interpolated frame
-        # TODO: Remove the padded pixels
-        # TODO: Return the frame
+        # Pad the input frames
+        padded_frame_prev = self.input_pad(frame_prev)
+        padded_frame_next = self.input_pad(frame_next)
 
+        # NOTE: Following below requires CUDA or else will not work
+        inter_frame_prev = self.sep_conv_net.apply(padded_frame_prev, k1_v, k1_h)
+        inter_frame_next = self.sep_conv_net.apply(padded_frame_next, k2_v, k2_h)
 
+        # Add the resulting outputs to get the final interpolated frame
+        inter_frame = inter_frame_prev + inter_frame_next
 
+        # If we had padded previously, remove the paddings
+        if need_h_pad:
+            inter_frame = inter_frame[:, :, :h_prev, :]
+        if need_w_pad:
+            inter_frame = inter_frame[:, :, :, :w_prev]
+
+        return inter_frame
