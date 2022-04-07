@@ -22,19 +22,21 @@ FRAME_DIM_MULTIPLE = 32     # Frame dimensions must be a multiple of this
 class InterpolationNet(nn.Module):
     """ Main network that is responsible for outputting the kernels per pixel """
 
-    def __init__(self, real_time, in_channels=64, out_channels=51):
+    def __init__(self, real_time, device, in_channels=64, out_channels=51):
         super().__init__()
 
+        self.device = device
         self.sep_conv_net = sepconv.FunctionSepconv()
         self.input_pad_pixels = out_channels // 2
         self.input_pad = nn.ReplicationPad2d([self.input_pad_pixels]*4)
 
         # Set the appropriate class references
-        # TODO: Write the appropriate references for real-time variant
-        BackboneNet = None if real_time else fe.FeatureExtractorNet
-        SubNet = None if real_time else subnet.SubNet
+        BackboneNet = rt_fe.ENet_FeatureExtractor if real_time else fe.FeatureExtractorNet
 
-        self.backbone = BackboneNet()
+        # TODO: Change the subnet as well ?
+        SubNet = subnet.SubNet
+
+        self.backbone = BackboneNet(device)
         self.vnet_1 = SubNet(in_channels, out_channels)
         self.hnet_1 = SubNet(in_channels, out_channels)
         self.vnet_2 = SubNet(in_channels, out_channels)
@@ -72,7 +74,11 @@ class InterpolationNet(nn.Module):
 
         # Now extract the features from the frames
         # Then send them to the corresponding subnets
-        output_features = self.backbone(frame_prev, frame_next)
+
+        # Need to concatenate the frames in the channel-axis (which is axis-1)
+        # That's what the paper does
+        frames_comb = torch.cat([frame_prev, frame_next], axis=1)
+        output_features = self.backbone(frames_comb)
         k1_v = self.vnet_1(output_features)
         k1_h = self.hnet_1(output_features)
         k2_v = self.vnet_2(output_features)

@@ -85,7 +85,7 @@ class FeatureExtractorNet(nn.Module):
     Feature extraction network, based on the architecture provided in the above linked paper
     and their corresponding GitHub code
     """
-    def __init__(self):
+    def __init__(self, device):
 
         super().__init__()
 
@@ -102,7 +102,7 @@ class FeatureExtractorNet(nn.Module):
         self.us_blk_3 = UpSampleBlock(256, 128)
         self.us_blk_2 = UpSampleBlock(128, 64)
 
-    def forward(self, frame_curr, frame_next):
+    def forward(self, frames_comb):
         """
         Extracts the features from the two input (RGB) frames and returns it
 
@@ -117,10 +117,6 @@ class FeatureExtractorNet(nn.Module):
               They can be multiple of 64, 128 etc. as well, but multiple of 32 is the least we expect to avoid
               rounding-off when downsampling
         """
-
-        # Need to concatenate the frames in the channel-axis (which is axis-1)
-        # That's what the paper does
-        frames_comb = torch.cat([frame_curr, frame_next], axis=1)
 
         # Down-sample the frames using the encoder net
         o1, ds_o1 = self.ds_blk_1(frames_comb)

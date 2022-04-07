@@ -53,9 +53,10 @@ def train(model, data_loader, n_epochs, chkpt_epochs, chkpt_dir, device, real_ti
             # Add the loss to check the training progress
             epoch_loss += loss.cpu().item()
 
-        # TODO: Save the model
+        # Save the model
+        # Naming format: [0|1]_model_[e]_[loss].pt
         if (e+1) % chkpt_epochs == 0:
-            chkpt_path = str(chkpt_dir / f'{real_time_mode}_{MODEL_CHKPT_PREFIX}_{e}.pt')
+            chkpt_path = str(chkpt_dir / f'{real_time_mode}_{MODEL_CHKPT_PREFIX}_{e}_{str(round(epoch_loss, 3))}.pt')
             chkpt_dict = build_chkpt_dict(model, e, optimizer, epoch_loss)
             torch.save(chkpt_dict, chkpt_path)
 

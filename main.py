@@ -48,11 +48,12 @@ def parse_args(args):
 
 if __name__ == '__main__':
     real_time_mode, train_mode, pretrained_path = parse_args(sys.argv[1:])
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Some sanity checks
     assert torch.cuda.is_available(), "[ERROR]: Need CUDA supported GPU or else it will not work :("
     assert train_mode or pretrained_path is not None, "[ERROR]: Testing mode requires pretrained model"
+
+    device = torch.device('cuda:0')
 
     # Set the dataset path accordingly
     chkpt_dir_path = pathlib.Path(CHKPT_DIR_PATH)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
 
     # Build the network
     # TODO: Load the network from pre-defined weights if option specified
-    network = net.InterpolationNet(real_time_mode)
+    network = net.InterpolationNet(real_time_mode, device)
 
     # Finally start the training/testing
     if train_mode:
