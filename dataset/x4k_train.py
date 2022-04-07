@@ -1,7 +1,6 @@
-# x4k.py -- Dataset class for X4K-1000FPS dataset
+# x4k_train.py -- Dataset class for X4K-1000FPS dataset
 
 import pathlib
-import torch
 from torchvision.io import read_image
 from torch.utils.data.dataloader import Dataset
 
@@ -13,6 +12,8 @@ class X4K1000FPS(Dataset):
 
     Convention:
         -> Each image is of PNG format
+        -> There are sub-directories within the train directory that contains the corresponding images (i.e. frames)
+        -> The frames are named sequentially in the order they appear in the video
     """
 
     def __init__(self, directory):

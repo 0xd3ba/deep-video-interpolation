@@ -57,7 +57,7 @@ class InterpolationNet(nn.Module):
 
         # If height is not a multiple of 32, pad it so that it is
         # They will be un-padded later on, from the resulting output
-        # Padding has the following semantics: (left, right, top, down) from the last dimension
+        # Padding has the following semantics: (left, right, top, down) from the LAST (right-most) dimension
         if need_h_pad:
             n_pad_pixels = FRAME_DIM_MULTIPLE - (h_prev % FRAME_DIM_MULTIPLE)
             frame_prev = F.pad(frame_prev, (0, 0, 0, n_pad_pixels))     # Pad the bottom of the frame
