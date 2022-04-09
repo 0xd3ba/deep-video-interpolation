@@ -20,7 +20,6 @@ CHKPT_DIR_PATH = './checkpoints'  # The directory for storing model checkpoints
 OUTPUT_DIR_PATH = './output'      # The directory for storing output
 DATA_DIR_PATH = './dataset'       # Root directory of the dataset
 TRAIN_DIR = 'train'               # Training set directory name
-TEST_DIR = 'test'                 # Testing set directory name
 
 BATCH_SIZE = 16                   # No. of samples per batch
 N_EPOCHS = 20                     # No. of epochs to train
