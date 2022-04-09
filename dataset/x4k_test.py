@@ -49,6 +49,10 @@ class X4K1000FPS(Dataset):
 
         return prev_frame, next_frame
 
+    def get_video_id(self):
+        """ Returns the name of the video folder """
+        return self.dir_path.name
+
     def get_video_fps(self):
         """
         For this dataset, we produce one less than twice the number of frames as interpolated frames

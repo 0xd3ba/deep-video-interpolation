@@ -75,7 +75,8 @@ def test(model, dataset_obj, output_dir, device, chkpt_path, real_time_mode):
     model.load_state_dict(chkpt_dict['model_state_dict'])
     model = model.to(device)
 
-    video_id = real_time_mode                                           # To identify between the two networks
+    net_id = 'enet' if real_time_mode else 'default'
+    video_id = f'{dataset_obj.get_video_id()}_{net_id}'                 # To identify between the two networks
     video_fps_true, video_fps_inter = dataset_obj.get_video_fps()       # Get the frame-rate of original and interpolated video
 
     inter_video_frames = []     # List storing the frames + interpolated video frames
@@ -125,8 +126,8 @@ def test(model, dataset_obj, output_dir, device, chkpt_path, real_time_mode):
     true_video_path = str(output_dir / f'{video_id}_true.{VIDEO_OP_EXTENSION}')
     inter_video_path = str(output_dir / f'{video_id}_pred.{VIDEO_OP_EXTENSION}')
 
-    write_video(true_video_path, true_video_frames_t, fps=video_fps_true)
     write_video(inter_video_path, inter_video_frames_t, fps=video_fps_inter)
+    write_video(true_video_path, true_video_frames_t, fps=video_fps_true)
 
     print(f'True Video written to : {true_video_path}')
     print(f'Interpolated video written to: {inter_video_path}')
