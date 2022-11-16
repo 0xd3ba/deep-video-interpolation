@@ -2,8 +2,7 @@
 
 ## Abstract
 Existing paper[4], although has reduced the memory requirements of [3] for high-resolution
-(720p) videos, it still depends on the traditional encoder-decoder architecture based convolu-
-tional neural-network (similar to SegNet[2]) for extracting the features. This makes it difficult
+(720p) videos, it still depends on the traditional encoder-decoder architecture based convolutional neural-network (similar to SegNet[2]) for extracting the features. This makes it difficult
 to be deployed in real-time scenarios because of the amount of computations needed to be performed 
 to extract the features. We propose substituting this encoder-decoder architecture with
 another one which is specifically meant for real-time tasks (for ex., ENet[1]) and try to quantify
